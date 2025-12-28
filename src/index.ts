@@ -80,6 +80,15 @@ export {
   detectLanguageFromExtension,
   getLanguagesForCategory,
 
+  // Hexagon metric helpers
+  type HexagonMetricKey,
+  getCategoryForHexagonMetric,
+  getHexagonMetricForCategory,
+  isLensInHexagonMetric,
+  getColorModeForHexagonMetric,
+  isHexagonMetricConfigured,
+  getHexagonMetricKeys,
+
   // Validation helpers
   isValidLensId,
   findCategoryConflicts,

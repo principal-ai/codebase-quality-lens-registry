@@ -159,6 +159,36 @@ declare function detectLanguageFromExtension(extension: string): Language | unde
  */
 declare function getLanguagesForCategory(category: LensCategory): Language[];
 /**
+ * Hexagon metric keys use camelCase (from QualityMetrics interface)
+ * These map to LensCategory which uses kebab-case
+ */
+type HexagonMetricKey = 'linting' | 'formatting' | 'types' | 'tests' | 'deadCode' | 'documentation';
+/**
+ * Get the LensCategory for a hexagon metric key
+ */
+declare function getCategoryForHexagonMetric(metric: HexagonMetricKey): LensCategory;
+/**
+ * Get the hexagon metric key for a LensCategory
+ */
+declare function getHexagonMetricForCategory(category: LensCategory): HexagonMetricKey | undefined;
+/**
+ * Check if a lens ID belongs to a hexagon metric
+ */
+declare function isLensInHexagonMetric(lensId: string, metric: HexagonMetricKey): boolean;
+/**
+ * Get the color mode for a hexagon metric based on which lenses ran.
+ * This is the main entry point for the QualityHexagon panel.
+ */
+declare function getColorModeForHexagonMetric(metric: HexagonMetricKey, lensesRan: string[]): string | null;
+/**
+ * Check if a hexagon metric is configured (has at least one lens that ran)
+ */
+declare function isHexagonMetricConfigured(metric: HexagonMetricKey, lensesRan: string[] | undefined): boolean;
+/**
+ * Get all hexagon metric keys
+ */
+declare function getHexagonMetricKeys(): HexagonMetricKey[];
+/**
  * Validate that a lens ID exists in the registry
  */
 declare function isValidLensId(lensId: string): boolean;
@@ -177,4 +207,4 @@ declare function validateLensOutputs(lensesRan: string[], fileMetricsProduced: s
     missing: ('fileMetrics' | 'aggregate')[];
 }>;
 
-export { CATEGORY_CONFIGS, type CategoryConfig, type ColorScheme, LANGUAGE_CONFIGS, LENS_REGISTRY, type Language, type LanguageConfig, type LensCategory, type LensMetadata, areLensesAlternatives, detectLanguageFromExtension, findCategoryConflicts, getAlternatives, getCategoryConfig, getCategoryDisplayName, getCategoryForLens, getColorModeForCategory, getLanguageConfig, getLanguagesForCategory, getLensById, getLensColorScheme, getLensDisplayName, getLensesByCategory, getLensesByCategoryAndLanguage, getLensesByLanguage, getLensesWithAggregates, getLensesWithFileMetrics, isCategoryInverted, isValidLensId, validateLensOutputs };
+export { CATEGORY_CONFIGS, type CategoryConfig, type ColorScheme, type HexagonMetricKey, LANGUAGE_CONFIGS, LENS_REGISTRY, type Language, type LanguageConfig, type LensCategory, type LensMetadata, areLensesAlternatives, detectLanguageFromExtension, findCategoryConflicts, getAlternatives, getCategoryConfig, getCategoryDisplayName, getCategoryForHexagonMetric, getCategoryForLens, getColorModeForCategory, getColorModeForHexagonMetric, getHexagonMetricForCategory, getHexagonMetricKeys, getLanguageConfig, getLanguagesForCategory, getLensById, getLensColorScheme, getLensDisplayName, getLensesByCategory, getLensesByCategoryAndLanguage, getLensesByLanguage, getLensesWithAggregates, getLensesWithFileMetrics, isCategoryInverted, isHexagonMetricConfigured, isLensInHexagonMetric, isValidLensId, validateLensOutputs };

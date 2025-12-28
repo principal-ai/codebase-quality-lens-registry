@@ -29,8 +29,12 @@ __export(index_exports, {
   getAlternatives: () => getAlternatives,
   getCategoryConfig: () => getCategoryConfig,
   getCategoryDisplayName: () => getCategoryDisplayName,
+  getCategoryForHexagonMetric: () => getCategoryForHexagonMetric,
   getCategoryForLens: () => getCategoryForLens,
   getColorModeForCategory: () => getColorModeForCategory,
+  getColorModeForHexagonMetric: () => getColorModeForHexagonMetric,
+  getHexagonMetricForCategory: () => getHexagonMetricForCategory,
+  getHexagonMetricKeys: () => getHexagonMetricKeys,
   getLanguageConfig: () => getLanguageConfig,
   getLanguagesForCategory: () => getLanguagesForCategory,
   getLensById: () => getLensById,
@@ -42,6 +46,8 @@ __export(index_exports, {
   getLensesWithAggregates: () => getLensesWithAggregates,
   getLensesWithFileMetrics: () => getLensesWithFileMetrics,
   isCategoryInverted: () => isCategoryInverted,
+  isHexagonMetricConfigured: () => isHexagonMetricConfigured,
+  isLensInHexagonMetric: () => isLensInHexagonMetric,
   isValidLensId: () => isValidLensId,
   validateLensOutputs: () => validateLensOutputs
 });
@@ -608,6 +614,49 @@ function getLanguagesForCategory(category) {
   }
   return Array.from(languages);
 }
+var HEXAGON_METRIC_TO_CATEGORY = {
+  linting: "linting",
+  formatting: "formatting",
+  types: "types",
+  tests: "tests",
+  deadCode: "dead-code",
+  documentation: "documentation"
+};
+var CATEGORY_TO_HEXAGON_METRIC = {
+  "linting": "linting",
+  "formatting": "formatting",
+  "types": "types",
+  "tests": "tests",
+  "dead-code": "deadCode",
+  "documentation": "documentation"
+};
+function getCategoryForHexagonMetric(metric) {
+  return HEXAGON_METRIC_TO_CATEGORY[metric];
+}
+function getHexagonMetricForCategory(category) {
+  return CATEGORY_TO_HEXAGON_METRIC[category];
+}
+function isLensInHexagonMetric(lensId, metric) {
+  const lensCategory = getCategoryForLens(lensId);
+  if (!lensCategory) return false;
+  return HEXAGON_METRIC_TO_CATEGORY[metric] === lensCategory;
+}
+function getColorModeForHexagonMetric(metric, lensesRan) {
+  const category = HEXAGON_METRIC_TO_CATEGORY[metric];
+  return getColorModeForCategory(category, lensesRan);
+}
+function isHexagonMetricConfigured(metric, lensesRan) {
+  if (lensesRan === void 0) {
+    return true;
+  }
+  if (lensesRan.length === 0) {
+    return false;
+  }
+  return lensesRan.some((lensId) => isLensInHexagonMetric(lensId, metric));
+}
+function getHexagonMetricKeys() {
+  return Object.keys(HEXAGON_METRIC_TO_CATEGORY);
+}
 function isValidLensId(lensId) {
   return getLensById(lensId) !== void 0;
 }
@@ -658,8 +707,12 @@ function validateLensOutputs(lensesRan, fileMetricsProduced, aggregatesProduced)
   getAlternatives,
   getCategoryConfig,
   getCategoryDisplayName,
+  getCategoryForHexagonMetric,
   getCategoryForLens,
   getColorModeForCategory,
+  getColorModeForHexagonMetric,
+  getHexagonMetricForCategory,
+  getHexagonMetricKeys,
   getLanguageConfig,
   getLanguagesForCategory,
   getLensById,
@@ -671,6 +724,8 @@ function validateLensOutputs(lensesRan, fileMetricsProduced, aggregatesProduced)
   getLensesWithAggregates,
   getLensesWithFileMetrics,
   isCategoryInverted,
+  isHexagonMetricConfigured,
+  isLensInHexagonMetric,
   isValidLensId,
   validateLensOutputs
 });

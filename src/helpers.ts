@@ -198,6 +198,106 @@ export function getLanguagesForCategory(category: LensCategory): Language[] {
 }
 
 // ============================================================
+// Hexagon Metric Helpers (for Quality Hexagon UI)
+// ============================================================
+
+/**
+ * Hexagon metric keys use camelCase (from QualityMetrics interface)
+ * These map to LensCategory which uses kebab-case
+ */
+export type HexagonMetricKey =
+  | 'linting'
+  | 'formatting'
+  | 'types'
+  | 'tests'
+  | 'deadCode'
+  | 'documentation';
+
+/**
+ * Map hexagon metric keys to registry LensCategory
+ */
+const HEXAGON_METRIC_TO_CATEGORY: Record<HexagonMetricKey, LensCategory> = {
+  linting: 'linting',
+  formatting: 'formatting',
+  types: 'types',
+  tests: 'tests',
+  deadCode: 'dead-code',
+  documentation: 'documentation',
+};
+
+/**
+ * Map LensCategory back to hexagon metric keys
+ */
+const CATEGORY_TO_HEXAGON_METRIC: Partial<Record<LensCategory, HexagonMetricKey>> = {
+  'linting': 'linting',
+  'formatting': 'formatting',
+  'types': 'types',
+  'tests': 'tests',
+  'dead-code': 'deadCode',
+  'documentation': 'documentation',
+};
+
+/**
+ * Get the LensCategory for a hexagon metric key
+ */
+export function getCategoryForHexagonMetric(metric: HexagonMetricKey): LensCategory {
+  return HEXAGON_METRIC_TO_CATEGORY[metric];
+}
+
+/**
+ * Get the hexagon metric key for a LensCategory
+ */
+export function getHexagonMetricForCategory(category: LensCategory): HexagonMetricKey | undefined {
+  return CATEGORY_TO_HEXAGON_METRIC[category];
+}
+
+/**
+ * Check if a lens ID belongs to a hexagon metric
+ */
+export function isLensInHexagonMetric(lensId: string, metric: HexagonMetricKey): boolean {
+  const lensCategory = getCategoryForLens(lensId);
+  if (!lensCategory) return false;
+  return HEXAGON_METRIC_TO_CATEGORY[metric] === lensCategory;
+}
+
+/**
+ * Get the color mode for a hexagon metric based on which lenses ran.
+ * This is the main entry point for the QualityHexagon panel.
+ */
+export function getColorModeForHexagonMetric(
+  metric: HexagonMetricKey,
+  lensesRan: string[]
+): string | null {
+  const category = HEXAGON_METRIC_TO_CATEGORY[metric];
+  return getColorModeForCategory(category, lensesRan);
+}
+
+/**
+ * Check if a hexagon metric is configured (has at least one lens that ran)
+ */
+export function isHexagonMetricConfigured(
+  metric: HexagonMetricKey,
+  lensesRan: string[] | undefined
+): boolean {
+  // undefined = old data without lensesRan tracking, assume all configured (backwards compatibility)
+  if (lensesRan === undefined) {
+    return true;
+  }
+  // Empty array = new data, explicitly no lenses ran for this package
+  if (lensesRan.length === 0) {
+    return false;
+  }
+  return lensesRan.some((lensId) => isLensInHexagonMetric(lensId, metric));
+}
+
+/**
+ * Get all hexagon metric keys
+ */
+export function getHexagonMetricKeys(): HexagonMetricKey[] {
+  return Object.keys(HEXAGON_METRIC_TO_CATEGORY) as HexagonMetricKey[];
+}
+
+// ============================================================
 // Validation Helpers
 // ============================================================
 
