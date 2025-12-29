@@ -46,6 +46,7 @@ export type {
   // File metrics types
   FileMetricData,
   QualitySliceData,
+  FileMetricsRequirements,
   // Color mode types
   BuiltInColorMode,
   LensColorMode,
@@ -130,3 +131,13 @@ export {
   getDefaultCommand,
   getAllDefaultLensIds,
 } from './defaults.js';
+
+// Export extraction utilities
+export {
+  type LensResultInput,
+  normalizeLensId,
+  getFileMetricsKey,
+  lensProducesCoverage,
+  extractQualityDataFromResults,
+  extractQualityDataWithPaths,
+} from './extraction.js';
