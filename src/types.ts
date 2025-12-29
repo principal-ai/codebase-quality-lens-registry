@@ -100,3 +100,205 @@ export interface LanguageConfig {
   /** Icon or emoji for the language */
   icon?: string;
 }
+
+// ============================================================
+// File Metrics Types (per-file quality data from lenses)
+// ============================================================
+
+/**
+ * Per-file metric data from quality lenses
+ * This is the standard structure produced by all lenses that output file metrics
+ */
+export interface FileMetricData {
+  /** File path relative to repository root */
+  file: string;
+  /** Overall score (0-100, higher is better) */
+  score: number;
+  /** Total number of issues found */
+  issueCount: number;
+  /** Number of errors (highest severity) */
+  errorCount: number;
+  /** Number of warnings */
+  warningCount: number;
+  /** Number of info-level diagnostics */
+  infoCount: number;
+  /** Number of hints (lowest severity) */
+  hintCount: number;
+  /** Number of auto-fixable issues (optional) */
+  fixableCount?: number;
+  /** Issue counts by category (optional, for detailed breakdown) */
+  categories?: Record<string, number>;
+}
+
+/**
+ * Quality data slice structure for File City visualization
+ * Contains per-file metrics keyed by lens ID
+ */
+export interface QualitySliceData {
+  /** Per-file coverage percentages from test runners (path -> coverage %) */
+  fileCoverage?: Record<string, number>;
+  /** Per-file metrics keyed by lens ID (e.g., 'eslint', 'typescript', 'biome-lint') */
+  fileMetrics?: Record<string, FileMetricData[]>;
+}
+
+// ============================================================
+// Color Mode Types (for File City visualization)
+// ============================================================
+
+/**
+ * Built-in color modes that don't come from quality lenses
+ * - fileTypes: Color by file extension
+ * - git: Color by git status (modified, added, deleted)
+ * - coverage: Color by test coverage percentage (derived from test lens data)
+ */
+export type BuiltInColorMode = 'fileTypes' | 'git' | 'coverage';
+
+/**
+ * Lens-based color modes derived from LENS_REGISTRY
+ * These are lens IDs that output file metrics
+ */
+export type LensColorMode =
+  // Linting
+  | 'eslint'
+  | 'biome-lint'
+  | 'oxlint'
+  | 'ruff'
+  | 'pylint'
+  | 'golangci-lint'
+  | 'clippy'
+  // Formatting
+  | 'prettier'
+  | 'biome-format'
+  | 'black'
+  | 'ruff-format'
+  | 'gofmt'
+  | 'rustfmt'
+  // Types
+  | 'typescript'
+  | 'mypy'
+  | 'pyright'
+  | 'go-vet'
+  // Tests (coverage)
+  | 'jest'
+  | 'vitest'
+  | 'bun-test'
+  | 'pytest'
+  | 'go-test'
+  | 'cargo-test'
+  // Dead code
+  | 'knip'
+  | 'vulture'
+  // Documentation
+  | 'alexandria'
+  // Security
+  | 'bandit';
+
+/**
+ * All available color modes for File City visualization
+ */
+export type ColorMode = BuiltInColorMode | LensColorMode;
+
+/**
+ * Configuration for a color mode (for UI display)
+ */
+export interface ColorModeConfig {
+  id: ColorMode;
+  name: string;
+  description: string;
+  /** Icon name (for lucide-react or similar) */
+  icon?: string;
+  /** The color scheme to use for visualization */
+  colorScheme: ColorScheme | 'categorical';
+  /** Whether this is a built-in mode (not from a lens) */
+  isBuiltIn: boolean;
+  /** The lens category this mode belongs to (if lens-based) */
+  category?: LensCategory;
+}
+
+// ============================================================
+// Quality Lens Config Types (quality-lens.yaml)
+// ============================================================
+
+/**
+ * Configuration for a single lens command
+ * Can be a simple string (the command) or a detailed config object
+ */
+export interface LensCommandConfig {
+  /** The command to run (e.g., "npm test", "go test ./...") */
+  command: string;
+  /** Additional arguments to pass to the command */
+  args?: string[];
+  /** Working directory relative to package root */
+  cwd?: string;
+  /** Environment variables to set */
+  env?: Record<string, string>;
+  /** Timeout in milliseconds */
+  timeout?: number;
+}
+
+/**
+ * Quality Lens configuration file structure (quality-lens.yaml)
+ *
+ * @example
+ * ```yaml
+ * # Simple string commands
+ * lenses:
+ *   jest: npm test
+ *   typescript: npx tsc --noEmit
+ *
+ * # Detailed config
+ * lenses:
+ *   eslint:
+ *     command: npm run lint
+ *     timeout: 60000
+ *
+ * # Exclude patterns
+ * exclude:
+ *   - "fixtures/"
+ * ```
+ */
+export interface QualityLensConfig {
+  /**
+   * Lens commands mapping: lens ID → command (string or config)
+   * Only lenses defined here will run for this package
+   */
+  lenses?: Record<string, string | LensCommandConfig>;
+
+  /**
+   * Whether to inherit lenses from parent config (git root)
+   * @default true
+   */
+  inherit?: boolean;
+
+  /**
+   * Glob patterns for files/directories to exclude from analysis
+   */
+  exclude?: string[];
+
+  /**
+   * Package-specific overrides in monorepos
+   * Maps package name/path to package-specific config
+   */
+  packages?: Record<string, Omit<QualityLensConfig, 'packages'>>;
+}
+
+/**
+ * Resolved lens command after config parsing
+ * Always has the full command details
+ */
+export interface ResolvedLensCommand {
+  /** Lens ID (e.g., 'jest', 'eslint', 'typescript') */
+  lensId: string;
+  /** Full command to execute */
+  command: string;
+  /** Additional arguments */
+  args: string[];
+  /** Working directory */
+  cwd?: string;
+  /** Environment variables */
+  env?: Record<string, string>;
+  /** Timeout in milliseconds */
+  timeout?: number;
+  /** Source of this command ('config' | 'default' | 'heuristic') */
+  source: 'config' | 'default' | 'heuristic';
+}

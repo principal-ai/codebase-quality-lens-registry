@@ -21,23 +21,37 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var index_exports = {};
 __export(index_exports, {
   CATEGORY_CONFIGS: () => CATEGORY_CONFIGS,
+  DEFAULT_COMMANDS: () => DEFAULT_COMMANDS,
+  GO_DEFAULTS: () => GO_DEFAULTS,
+  JAVASCRIPT_DEFAULTS: () => JAVASCRIPT_DEFAULTS,
   LANGUAGE_CONFIGS: () => LANGUAGE_CONFIGS,
   LENS_REGISTRY: () => LENS_REGISTRY,
+  PYTHON_DEFAULTS: () => PYTHON_DEFAULTS,
+  RUST_DEFAULTS: () => RUST_DEFAULTS,
   areLensesAlternatives: () => areLensesAlternatives,
   detectLanguageFromExtension: () => detectLanguageFromExtension,
   findCategoryConflicts: () => findCategoryConflicts,
+  getAllColorModeConfigs: () => getAllColorModeConfigs,
+  getAllDefaultLensIds: () => getAllDefaultLensIds,
   getAlternatives: () => getAlternatives,
+  getAvailableColorModes: () => getAvailableColorModes,
+  getAvailableColorModesFromLenses: () => getAvailableColorModesFromLenses,
   getCategoryConfig: () => getCategoryConfig,
   getCategoryDisplayName: () => getCategoryDisplayName,
   getCategoryForHexagonMetric: () => getCategoryForHexagonMetric,
   getCategoryForLens: () => getCategoryForLens,
+  getColorModeConfig: () => getColorModeConfig,
   getColorModeForCategory: () => getColorModeForCategory,
   getColorModeForHexagonMetric: () => getColorModeForHexagonMetric,
+  getColorModesForLanguage: () => getColorModesForLanguage,
+  getDefaultCommand: () => getDefaultCommand,
+  getDefaultCommands: () => getDefaultCommands,
   getHexagonMetricForCategory: () => getHexagonMetricForCategory,
   getHexagonMetricKeys: () => getHexagonMetricKeys,
   getLanguageConfig: () => getLanguageConfig,
   getLanguagesForCategory: () => getLanguagesForCategory,
   getLensById: () => getLensById,
+  getLensColorModes: () => getLensColorModes,
   getLensColorScheme: () => getLensColorScheme,
   getLensDisplayName: () => getLensDisplayName,
   getLensesByCategory: () => getLensesByCategory,
@@ -46,8 +60,11 @@ __export(index_exports, {
   getLensesWithAggregates: () => getLensesWithAggregates,
   getLensesWithFileMetrics: () => getLensesWithFileMetrics,
   isCategoryInverted: () => isCategoryInverted,
+  isColorModeAvailable: () => isColorModeAvailable,
   isHexagonMetricConfigured: () => isHexagonMetricConfigured,
+  isLensColorMode: () => isLensColorMode,
   isLensInHexagonMetric: () => isLensInHexagonMetric,
+  isValidColorMode: () => isValidColorMode,
   isValidLensId: () => isValidLensId,
   validateLensOutputs: () => validateLensOutputs
 });
@@ -696,26 +713,361 @@ function validateLensOutputs(lensesRan, fileMetricsProduced, aggregatesProduced)
   }
   return issues;
 }
+var BUILT_IN_COLOR_MODES = [
+  {
+    id: "fileTypes",
+    name: "File Types",
+    description: "Color by file extension/type",
+    icon: "FileCode",
+    colorScheme: "categorical",
+    isBuiltIn: true
+  },
+  {
+    id: "git",
+    name: "Git Status",
+    description: "Color by git status (modified, added, etc.)",
+    icon: "GitBranch",
+    colorScheme: "categorical",
+    isBuiltIn: true
+  },
+  {
+    id: "coverage",
+    name: "Test Coverage",
+    description: "Color by test coverage percentage",
+    icon: "TestTube",
+    colorScheme: "coverage",
+    isBuiltIn: true,
+    category: "tests"
+  }
+];
+function getAvailableColorModes() {
+  const builtIn = ["fileTypes", "git", "coverage"];
+  const lensColorModes = getLensColorModes();
+  return [...builtIn, ...lensColorModes];
+}
+function getLensColorModes() {
+  return LENS_REGISTRY.filter((lens) => lens.outputsFileMetrics).map((lens) => lens.id);
+}
+function isValidColorMode(mode) {
+  return getAvailableColorModes().includes(mode);
+}
+function isLensColorMode(mode) {
+  return getLensColorModes().includes(mode);
+}
+function getColorModeConfig(mode) {
+  const builtIn = BUILT_IN_COLOR_MODES.find((m) => m.id === mode);
+  if (builtIn) return builtIn;
+  const lens = getLensById(mode);
+  if (lens && lens.outputsFileMetrics) {
+    const category = getCategoryConfig(lens.category);
+    return {
+      id: mode,
+      name: lens.name,
+      description: lens.description ?? `${lens.name} analysis`,
+      icon: category?.icon,
+      colorScheme: lens.colorScheme,
+      isBuiltIn: false,
+      category: lens.category
+    };
+  }
+  return void 0;
+}
+function getAllColorModeConfigs() {
+  const configs = [...BUILT_IN_COLOR_MODES];
+  for (const lens of LENS_REGISTRY) {
+    if (lens.outputsFileMetrics) {
+      const category = getCategoryConfig(lens.category);
+      configs.push({
+        id: lens.id,
+        name: lens.name,
+        description: lens.description ?? `${lens.name} analysis`,
+        icon: category?.icon,
+        colorScheme: lens.colorScheme,
+        isBuiltIn: false,
+        category: lens.category
+      });
+    }
+  }
+  return configs;
+}
+function getColorModesForLanguage(language) {
+  const builtIn = ["fileTypes", "git"];
+  const lensColorModes = LENS_REGISTRY.filter((lens) => lens.outputsFileMetrics && lens.languages.includes(language)).map((lens) => lens.id);
+  return [...builtIn, ...lensColorModes];
+}
+function getAvailableColorModesFromLenses(lensesRan) {
+  const builtIn = ["fileTypes", "git", "coverage"];
+  const lensColorModes = lensesRan.filter((lensId) => {
+    const lens = getLensById(lensId);
+    return lens?.outputsFileMetrics;
+  });
+  return [...builtIn, ...lensColorModes];
+}
+function isColorModeAvailable(mode, lensesRan) {
+  if (mode === "fileTypes" || mode === "git" || mode === "coverage") {
+    return true;
+  }
+  return lensesRan.includes(mode);
+}
+
+// src/defaults.ts
+var JAVASCRIPT_DEFAULTS = [
+  // Testing
+  {
+    lensId: "jest",
+    command: "npx jest",
+    cliArgs: ["--json", "--coverage", "--passWithNoTests"],
+    description: "Run Jest tests with coverage"
+  },
+  {
+    lensId: "vitest",
+    command: "npx vitest run",
+    cliArgs: ["--reporter=json", "--coverage"],
+    description: "Run Vitest tests with coverage"
+  },
+  {
+    lensId: "bun-test",
+    command: "bun test",
+    cliArgs: ["--coverage"],
+    description: "Run Bun tests with coverage"
+  },
+  // Linting
+  {
+    lensId: "eslint",
+    command: "npx eslint .",
+    cliArgs: ["--format=json"],
+    description: "Run ESLint"
+  },
+  {
+    lensId: "biome-lint",
+    command: "npx @biomejs/biome lint .",
+    cliArgs: ["--reporter=json"],
+    description: "Run Biome linter"
+  },
+  {
+    lensId: "oxlint",
+    command: "npx oxlint",
+    cliArgs: ["--format=json"],
+    description: "Run oxlint"
+  },
+  // Formatting
+  {
+    lensId: "prettier",
+    command: "npx prettier --check .",
+    cliArgs: [],
+    description: "Check Prettier formatting"
+  },
+  {
+    lensId: "biome-format",
+    command: "npx @biomejs/biome format .",
+    cliArgs: ["--reporter=json"],
+    description: "Check Biome formatting"
+  },
+  // Types
+  {
+    lensId: "typescript",
+    command: "npx tsc --noEmit",
+    cliArgs: [],
+    description: "Run TypeScript type checking"
+  },
+  // Dead code
+  {
+    lensId: "knip",
+    command: "npx knip",
+    cliArgs: ["--reporter=json"],
+    description: "Find unused code with Knip"
+  },
+  // Documentation
+  {
+    lensId: "alexandria",
+    command: "npx @anthropic-ai/alexandria lint",
+    cliArgs: [],
+    description: "Check documentation coverage"
+  }
+];
+var PYTHON_DEFAULTS = [
+  // Testing
+  {
+    lensId: "pytest",
+    command: "pytest",
+    cliArgs: ["--json-report", "--cov", "--cov-report=json"],
+    description: "Run pytest with coverage"
+  },
+  // Linting
+  {
+    lensId: "ruff",
+    command: "ruff check .",
+    cliArgs: ["--output-format=json"],
+    description: "Run Ruff linter"
+  },
+  {
+    lensId: "pylint",
+    command: "pylint",
+    cliArgs: ["--output-format=json"],
+    description: "Run Pylint"
+  },
+  // Formatting
+  {
+    lensId: "black",
+    command: "black --check .",
+    cliArgs: [],
+    description: "Check Black formatting"
+  },
+  {
+    lensId: "ruff-format",
+    command: "ruff format --check .",
+    cliArgs: [],
+    description: "Check Ruff formatting"
+  },
+  // Types
+  {
+    lensId: "mypy",
+    command: "mypy .",
+    cliArgs: ["--output=json"],
+    description: "Run MyPy type checking"
+  },
+  {
+    lensId: "pyright",
+    command: "pyright",
+    cliArgs: ["--outputjson"],
+    description: "Run Pyright type checking"
+  },
+  // Dead code
+  {
+    lensId: "vulture",
+    command: "vulture .",
+    cliArgs: [],
+    description: "Find dead code with Vulture"
+  },
+  // Security
+  {
+    lensId: "bandit",
+    command: "bandit -r .",
+    cliArgs: ["--format=json"],
+    description: "Security scan with Bandit"
+  }
+];
+var GO_DEFAULTS = [
+  // Testing
+  {
+    lensId: "go-test",
+    command: "go test ./...",
+    cliArgs: ["-json", "-cover"],
+    description: "Run Go tests with coverage"
+  },
+  // Linting
+  {
+    lensId: "golangci-lint",
+    command: "golangci-lint run",
+    cliArgs: ["--out-format=json"],
+    description: "Run golangci-lint"
+  },
+  // Formatting
+  {
+    lensId: "gofmt",
+    command: "gofmt -l .",
+    cliArgs: [],
+    description: "Check Go formatting"
+  },
+  // Types / Vet
+  {
+    lensId: "go-vet",
+    command: "go vet ./...",
+    cliArgs: ["-json"],
+    description: "Run go vet"
+  }
+];
+var RUST_DEFAULTS = [
+  // Testing
+  {
+    lensId: "cargo-test",
+    command: "cargo test",
+    cliArgs: ["--", "--format=json"],
+    description: "Run Cargo tests"
+  },
+  // Linting
+  {
+    lensId: "clippy",
+    command: "cargo clippy",
+    cliArgs: ["--message-format=json"],
+    description: "Run Clippy linter"
+  },
+  // Formatting
+  {
+    lensId: "rustfmt",
+    command: "cargo fmt --check",
+    cliArgs: [],
+    description: "Check Rust formatting"
+  }
+];
+var DEFAULT_COMMANDS = {
+  typescript: JAVASCRIPT_DEFAULTS,
+  javascript: JAVASCRIPT_DEFAULTS,
+  python: PYTHON_DEFAULTS,
+  go: GO_DEFAULTS,
+  rust: RUST_DEFAULTS,
+  // Placeholder for future languages
+  java: [],
+  csharp: [],
+  ruby: [],
+  php: []
+};
+function getDefaultCommands(language) {
+  return DEFAULT_COMMANDS[language] || [];
+}
+function getDefaultCommand(lensId, language) {
+  if (language) {
+    return DEFAULT_COMMANDS[language]?.find((cmd) => cmd.lensId === lensId);
+  }
+  for (const commands of Object.values(DEFAULT_COMMANDS)) {
+    const found = commands.find((cmd) => cmd.lensId === lensId);
+    if (found) return found;
+  }
+  return void 0;
+}
+function getAllDefaultLensIds() {
+  const ids = /* @__PURE__ */ new Set();
+  for (const commands of Object.values(DEFAULT_COMMANDS)) {
+    for (const cmd of commands) {
+      ids.add(cmd.lensId);
+    }
+  }
+  return Array.from(ids);
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CATEGORY_CONFIGS,
+  DEFAULT_COMMANDS,
+  GO_DEFAULTS,
+  JAVASCRIPT_DEFAULTS,
   LANGUAGE_CONFIGS,
   LENS_REGISTRY,
+  PYTHON_DEFAULTS,
+  RUST_DEFAULTS,
   areLensesAlternatives,
   detectLanguageFromExtension,
   findCategoryConflicts,
+  getAllColorModeConfigs,
+  getAllDefaultLensIds,
   getAlternatives,
+  getAvailableColorModes,
+  getAvailableColorModesFromLenses,
   getCategoryConfig,
   getCategoryDisplayName,
   getCategoryForHexagonMetric,
   getCategoryForLens,
+  getColorModeConfig,
   getColorModeForCategory,
   getColorModeForHexagonMetric,
+  getColorModesForLanguage,
+  getDefaultCommand,
+  getDefaultCommands,
   getHexagonMetricForCategory,
   getHexagonMetricKeys,
   getLanguageConfig,
   getLanguagesForCategory,
   getLensById,
+  getLensColorModes,
   getLensColorScheme,
   getLensDisplayName,
   getLensesByCategory,
@@ -724,8 +1076,11 @@ function validateLensOutputs(lensesRan, fileMetricsProduced, aggregatesProduced)
   getLensesWithAggregates,
   getLensesWithFileMetrics,
   isCategoryInverted,
+  isColorModeAvailable,
   isHexagonMetricConfigured,
+  isLensColorMode,
   isLensInHexagonMetric,
+  isValidColorMode,
   isValidLensId,
   validateLensOutputs
 });

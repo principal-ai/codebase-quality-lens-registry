@@ -1,4 +1,4 @@
-import type { LensMetadata, LensCategory, Language, CategoryConfig, LanguageConfig } from './types.js';
+import type { LensMetadata, LensCategory, Language, CategoryConfig, LanguageConfig, ColorMode, LensColorMode, ColorModeConfig, ColorScheme } from './types.js';
 import { LENS_REGISTRY, CATEGORY_CONFIGS, LANGUAGE_CONFIGS } from './registry.js';
 
 // ============================================================
@@ -364,4 +364,163 @@ export function validateLensOutputs(
   }
 
   return issues;
+}
+
+// ============================================================
+// Color Mode Helpers (for File City visualization)
+// ============================================================
+
+/**
+ * Built-in color modes that don't come from quality lenses
+ */
+const BUILT_IN_COLOR_MODES: ColorModeConfig[] = [
+  {
+    id: 'fileTypes',
+    name: 'File Types',
+    description: 'Color by file extension/type',
+    icon: 'FileCode',
+    colorScheme: 'categorical',
+    isBuiltIn: true,
+  },
+  {
+    id: 'git',
+    name: 'Git Status',
+    description: 'Color by git status (modified, added, etc.)',
+    icon: 'GitBranch',
+    colorScheme: 'categorical',
+    isBuiltIn: true,
+  },
+  {
+    id: 'coverage',
+    name: 'Test Coverage',
+    description: 'Color by test coverage percentage',
+    icon: 'TestTube',
+    colorScheme: 'coverage',
+    isBuiltIn: true,
+    category: 'tests',
+  },
+];
+
+/**
+ * Get all available color modes (built-in + lens-based)
+ */
+export function getAvailableColorModes(): ColorMode[] {
+  const builtIn: ColorMode[] = ['fileTypes', 'git', 'coverage'];
+  const lensColorModes = getLensColorModes();
+  return [...builtIn, ...lensColorModes];
+}
+
+/**
+ * Get all lens-based color modes (lenses that output file metrics)
+ */
+export function getLensColorModes(): LensColorMode[] {
+  return LENS_REGISTRY
+    .filter((lens) => lens.outputsFileMetrics)
+    .map((lens) => lens.id as LensColorMode);
+}
+
+/**
+ * Check if a string is a valid color mode
+ */
+export function isValidColorMode(mode: string): mode is ColorMode {
+  return getAvailableColorModes().includes(mode as ColorMode);
+}
+
+/**
+ * Check if a color mode is lens-based (not built-in)
+ */
+export function isLensColorMode(mode: string): mode is LensColorMode {
+  return getLensColorModes().includes(mode as LensColorMode);
+}
+
+/**
+ * Get configuration for a color mode
+ */
+export function getColorModeConfig(mode: ColorMode): ColorModeConfig | undefined {
+  // Check built-in modes first
+  const builtIn = BUILT_IN_COLOR_MODES.find((m) => m.id === mode);
+  if (builtIn) return builtIn;
+
+  // Check lens-based modes
+  const lens = getLensById(mode);
+  if (lens && lens.outputsFileMetrics) {
+    const category = getCategoryConfig(lens.category);
+    return {
+      id: mode,
+      name: lens.name,
+      description: lens.description ?? `${lens.name} analysis`,
+      icon: category?.icon,
+      colorScheme: lens.colorScheme,
+      isBuiltIn: false,
+      category: lens.category,
+    };
+  }
+
+  return undefined;
+}
+
+/**
+ * Get all color mode configurations (for building UI dropdowns/lists)
+ */
+export function getAllColorModeConfigs(): ColorModeConfig[] {
+  const configs: ColorModeConfig[] = [...BUILT_IN_COLOR_MODES];
+
+  for (const lens of LENS_REGISTRY) {
+    if (lens.outputsFileMetrics) {
+      const category = getCategoryConfig(lens.category);
+      configs.push({
+        id: lens.id as ColorMode,
+        name: lens.name,
+        description: lens.description ?? `${lens.name} analysis`,
+        icon: category?.icon,
+        colorScheme: lens.colorScheme,
+        isBuiltIn: false,
+        category: lens.category,
+      });
+    }
+  }
+
+  return configs;
+}
+
+/**
+ * Get color modes available for a specific language
+ * (built-in modes + lens modes that support the language)
+ */
+export function getColorModesForLanguage(language: Language): ColorMode[] {
+  const builtIn: ColorMode[] = ['fileTypes', 'git'];
+
+  const lensColorModes = LENS_REGISTRY
+    .filter((lens) => lens.outputsFileMetrics && lens.languages.includes(language))
+    .map((lens) => lens.id as LensColorMode);
+
+  return [...builtIn, ...lensColorModes];
+}
+
+/**
+ * Get color modes available based on which lenses ran
+ * (built-in modes + lens modes from lensesRan list)
+ */
+export function getAvailableColorModesFromLenses(lensesRan: string[]): ColorMode[] {
+  const builtIn: ColorMode[] = ['fileTypes', 'git', 'coverage'];
+
+  const lensColorModes = lensesRan.filter((lensId) => {
+    const lens = getLensById(lensId);
+    return lens?.outputsFileMetrics;
+  }) as LensColorMode[];
+
+  return [...builtIn, ...lensColorModes];
+}
+
+/**
+ * Check if a color mode is available based on which lenses ran
+ */
+export function isColorModeAvailable(mode: ColorMode, lensesRan: string[]): boolean {
+  // Built-in modes are always available
+  if (mode === 'fileTypes' || mode === 'git' || mode === 'coverage') {
+    return true;
+  }
+
+  // Lens-based modes are available if the lens ran
+  return lensesRan.includes(mode);
 }

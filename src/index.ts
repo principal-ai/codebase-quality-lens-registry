@@ -43,6 +43,18 @@ export type {
   LensMetadata,
   CategoryConfig,
   LanguageConfig,
+  // File metrics types
+  FileMetricData,
+  QualitySliceData,
+  // Color mode types
+  BuiltInColorMode,
+  LensColorMode,
+  ColorMode,
+  ColorModeConfig,
+  // Config types (quality-lens.yaml)
+  LensCommandConfig,
+  QualityLensConfig,
+  ResolvedLensCommand,
 } from './types.js';
 
 // Export registry data
@@ -93,4 +105,28 @@ export {
   isValidLensId,
   findCategoryConflicts,
   validateLensOutputs,
+
+  // Color mode helpers (for File City)
+  getAvailableColorModes,
+  getLensColorModes,
+  isValidColorMode,
+  isLensColorMode,
+  getColorModeConfig,
+  getAllColorModeConfigs,
+  getColorModesForLanguage,
+  getAvailableColorModesFromLenses,
+  isColorModeAvailable,
 } from './helpers.js';
+
+// Export default commands
+export {
+  type DefaultLensCommand,
+  DEFAULT_COMMANDS,
+  JAVASCRIPT_DEFAULTS,
+  PYTHON_DEFAULTS,
+  GO_DEFAULTS,
+  RUST_DEFAULTS,
+  getDefaultCommands,
+  getDefaultCommand,
+  getAllDefaultLensIds,
+} from './defaults.js';
