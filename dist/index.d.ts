@@ -12,6 +12,49 @@ type LensCategory = 'linting' | 'formatting' | 'types' | 'tests' | 'dead-code' |
  */
 type ColorScheme = 'issues' | 'coverage' | 'binary';
 /**
+ * Requirements for a lens to produce complete file metrics
+ * Used by the CLI diagnose command to help users configure lenses correctly
+ */
+interface FileMetricsRequirements {
+    /**
+     * The complete command that produces full file metrics
+     * This is the "known good" configuration for quality-lens.yaml
+     */
+    completeCommand: string;
+    /**
+     * Required flags that must be present for complete file metrics
+     * e.g., ['--listFiles'] for TypeScript, ['--coverage'] for Jest
+     */
+    requiredFlags?: string[];
+    /**
+     * Output format flag required for parsing (if any)
+     * e.g., '--format json' for ESLint, '--reporter=json' for Biome
+     */
+    formatFlag?: string;
+    /**
+     * What happens without the required configuration
+     * Shown to users to explain why their setup is incomplete
+     */
+    withoutConfig: string;
+    /**
+     * Strategy used when complete file metrics are unavailable
+     * - 'source-file-count': Count source files as fallback
+     * - 'issues-only': Only files with issues are reported
+     * - 'coverage-only': Only coverage data, no source metrics
+     * - 'none': No fallback available
+     */
+    fallbackStrategy: 'source-file-count' | 'issues-only' | 'coverage-only' | 'none';
+    /**
+     * Whether this lens natively produces complete file metrics
+     * (i.e., reports ALL analyzed files, not just those with issues)
+     */
+    nativelyComplete: boolean;
+    /**
+     * Additional notes about file metrics for this lens
+     */
+    notes?: string;
+}
+/**
  * Metadata for a quality lens
  */
 interface LensMetadata {
@@ -42,6 +85,11 @@ interface LensMetadata {
      * Useful for documentation and debugging
      */
     command?: string;
+    /**
+     * Requirements for producing complete file metrics
+     * Used by CLI diagnose command to help users configure correctly
+     */
+    fileMetricsRequirements?: FileMetricsRequirements;
 }
 /**
  * Category display configuration for UI
@@ -442,4 +490,91 @@ declare function getDefaultCommand(lensId: string, language?: Language): Default
  */
 declare function getAllDefaultLensIds(): string[];
 
-export { type BuiltInColorMode, CATEGORY_CONFIGS, type CategoryConfig, type ColorMode, type ColorModeConfig, type ColorScheme, DEFAULT_COMMANDS, type DefaultLensCommand, type FileMetricData, GO_DEFAULTS, type HexagonMetricKey, JAVASCRIPT_DEFAULTS, LANGUAGE_CONFIGS, LENS_REGISTRY, type Language, type LanguageConfig, type LensCategory, type LensColorMode, type LensCommandConfig, type LensMetadata, PYTHON_DEFAULTS, type QualityLensConfig, type QualitySliceData, RUST_DEFAULTS, type ResolvedLensCommand, areLensesAlternatives, detectLanguageFromExtension, findCategoryConflicts, getAllColorModeConfigs, getAllDefaultLensIds, getAlternatives, getAvailableColorModes, getAvailableColorModesFromLenses, getCategoryConfig, getCategoryDisplayName, getCategoryForHexagonMetric, getCategoryForLens, getColorModeConfig, getColorModeForCategory, getColorModeForHexagonMetric, getColorModesForLanguage, getDefaultCommand, getDefaultCommands, getHexagonMetricForCategory, getHexagonMetricKeys, getLanguageConfig, getLanguagesForCategory, getLensById, getLensColorModes, getLensColorScheme, getLensDisplayName, getLensesByCategory, getLensesByCategoryAndLanguage, getLensesByLanguage, getLensesWithAggregates, getLensesWithFileMetrics, isCategoryInverted, isColorModeAvailable, isHexagonMetricConfigured, isLensColorMode, isLensInHexagonMetric, isValidColorMode, isValidLensId, validateLensOutputs };
+/**
+ * Quality data extraction utilities
+ *
+ * Provides centralized logic for extracting fileCoverage and fileMetrics
+ * from lens results. Used by both electron-app and web-ade.
+ */
+
+/**
+ * Input format for lens results (matches CLI output structure)
+ */
+interface LensResultInput {
+    /** Package info */
+    package?: {
+        name: string;
+        path?: string;
+    };
+    /** Lens info */
+    lens?: {
+        id: string;
+        command?: string;
+    };
+    /** Coverage data from test lenses (jest, vitest, pytest, etc.) */
+    coverage?: {
+        line?: number;
+        branch?: number;
+        function?: number;
+        statement?: number;
+        files?: Array<{
+            file: string;
+            lines: number;
+            branches?: number;
+            functions?: number;
+            statements?: number;
+        }>;
+    };
+    /** Per-file metrics from the lens */
+    fileMetrics?: FileMetricData[];
+}
+/**
+ * Normalize a lens ID to its canonical form
+ *
+ * Maps aliases to their primary lens ID:
+ * - 'lint' -> 'eslint'
+ * - 'typecheck'/'tsc' -> 'typescript'
+ * - 'format' -> 'prettier'
+ * - 'test' -> 'jest'
+ */
+declare function normalizeLensId(lensId: string): string;
+/**
+ * Get the fileMetrics key for a lens
+ *
+ * Groups related lenses under the same key:
+ * - biome-lint -> 'biome-lint' (not 'eslint', they're alternatives)
+ * - biome-format -> 'biome-format' (not 'prettier')
+ */
+declare function getFileMetricsKey(lensId: string): string;
+/**
+ * Check if a lens produces coverage data
+ */
+declare function lensProducesCoverage(lensId: string): boolean;
+/**
+ * Extract quality data (fileCoverage and fileMetrics) from lens results
+ *
+ * This is the main function used by both electron-app and web-ade to
+ * process lens results from GitHub artifacts.
+ *
+ * @param results - Array of lens results from the CLI output
+ * @returns Extracted quality data with fileCoverage and fileMetrics
+ *
+ * @example
+ * ```typescript
+ * const results = JSON.parse(artifactContents);
+ * const { fileCoverage, fileMetrics } = extractQualityDataFromResults(results.results);
+ * ```
+ */
+declare function extractQualityDataFromResults(results: LensResultInput[]): QualitySliceData;
+/**
+ * Extract quality data with package path prefixing
+ *
+ * Similar to extractQualityDataFromResults but prefixes file paths with
+ * the package path. Useful when you need repo-relative paths.
+ *
+ * @param results - Array of lens results
+ * @param prefixPaths - Whether to prefix paths with package path (default: false)
+ */
+declare function extractQualityDataWithPaths(results: LensResultInput[], prefixPaths?: boolean): QualitySliceData;
+
+export { type BuiltInColorMode, CATEGORY_CONFIGS, type CategoryConfig, type ColorMode, type ColorModeConfig, type ColorScheme, DEFAULT_COMMANDS, type DefaultLensCommand, type FileMetricData, type FileMetricsRequirements, GO_DEFAULTS, type HexagonMetricKey, JAVASCRIPT_DEFAULTS, LANGUAGE_CONFIGS, LENS_REGISTRY, type Language, type LanguageConfig, type LensCategory, type LensColorMode, type LensCommandConfig, type LensMetadata, type LensResultInput, PYTHON_DEFAULTS, type QualityLensConfig, type QualitySliceData, RUST_DEFAULTS, type ResolvedLensCommand, areLensesAlternatives, detectLanguageFromExtension, extractQualityDataFromResults, extractQualityDataWithPaths, findCategoryConflicts, getAllColorModeConfigs, getAllDefaultLensIds, getAlternatives, getAvailableColorModes, getAvailableColorModesFromLenses, getCategoryConfig, getCategoryDisplayName, getCategoryForHexagonMetric, getCategoryForLens, getColorModeConfig, getColorModeForCategory, getColorModeForHexagonMetric, getColorModesForLanguage, getDefaultCommand, getDefaultCommands, getFileMetricsKey, getHexagonMetricForCategory, getHexagonMetricKeys, getLanguageConfig, getLanguagesForCategory, getLensById, getLensColorModes, getLensColorScheme, getLensDisplayName, getLensesByCategory, getLensesByCategoryAndLanguage, getLensesByLanguage, getLensesWithAggregates, getLensesWithFileMetrics, isCategoryInverted, isColorModeAvailable, isHexagonMetricConfigured, isLensColorMode, isLensInHexagonMetric, isValidColorMode, isValidLensId, lensProducesCoverage, normalizeLensId, validateLensOutputs };

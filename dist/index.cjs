@@ -30,6 +30,8 @@ __export(index_exports, {
   RUST_DEFAULTS: () => RUST_DEFAULTS,
   areLensesAlternatives: () => areLensesAlternatives,
   detectLanguageFromExtension: () => detectLanguageFromExtension,
+  extractQualityDataFromResults: () => extractQualityDataFromResults,
+  extractQualityDataWithPaths: () => extractQualityDataWithPaths,
   findCategoryConflicts: () => findCategoryConflicts,
   getAllColorModeConfigs: () => getAllColorModeConfigs,
   getAllDefaultLensIds: () => getAllDefaultLensIds,
@@ -46,6 +48,7 @@ __export(index_exports, {
   getColorModesForLanguage: () => getColorModesForLanguage,
   getDefaultCommand: () => getDefaultCommand,
   getDefaultCommands: () => getDefaultCommands,
+  getFileMetricsKey: () => getFileMetricsKey,
   getHexagonMetricForCategory: () => getHexagonMetricForCategory,
   getHexagonMetricKeys: () => getHexagonMetricKeys,
   getLanguageConfig: () => getLanguageConfig,
@@ -66,6 +69,8 @@ __export(index_exports, {
   isLensInHexagonMetric: () => isLensInHexagonMetric,
   isValidColorMode: () => isValidColorMode,
   isValidLensId: () => isValidLensId,
+  lensProducesCoverage: () => lensProducesCoverage,
+  normalizeLensId: () => normalizeLensId,
   validateLensOutputs: () => validateLensOutputs
 });
 module.exports = __toCommonJS(index_exports);
@@ -85,7 +90,16 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "issues",
     description: "Pluggable linting utility for JavaScript and TypeScript",
-    command: "eslint"
+    command: "eslint",
+    fileMetricsRequirements: {
+      completeCommand: "npx eslint . --format json",
+      requiredFlags: ["--format json"],
+      formatFlag: "--format json",
+      withoutConfig: "Only files with issues are reported in the output",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: false,
+      notes: "ESLint JSON output only includes files that have issues. Clean files are not listed."
+    }
   },
   {
     id: "biome-lint",
@@ -97,7 +111,16 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "issues",
     description: "Fast linter for JavaScript and TypeScript",
-    command: "biome lint"
+    command: "biome lint",
+    fileMetricsRequirements: {
+      completeCommand: "npx @biomejs/biome lint . --reporter=json",
+      requiredFlags: ["--reporter=json"],
+      formatFlag: "--reporter=json",
+      withoutConfig: "Output cannot be parsed for file metrics",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: true,
+      notes: "Biome JSON output includes all analyzed files."
+    }
   },
   {
     id: "oxlint",
@@ -109,7 +132,15 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "issues",
     description: "Blazing fast JavaScript/TypeScript linter",
-    command: "oxlint"
+    command: "oxlint",
+    fileMetricsRequirements: {
+      completeCommand: "npx oxlint --format json",
+      requiredFlags: ["--format json"],
+      formatFlag: "--format json",
+      withoutConfig: "Output cannot be parsed for file metrics",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: false
+    }
   },
   // Python linting
   {
@@ -122,7 +153,16 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "issues",
     description: "Extremely fast Python linter",
-    command: "ruff check"
+    command: "ruff check",
+    fileMetricsRequirements: {
+      completeCommand: "ruff check . --output-format=json",
+      requiredFlags: ["--output-format=json"],
+      formatFlag: "--output-format=json",
+      withoutConfig: "Output cannot be parsed for file metrics",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: false,
+      notes: "Ruff JSON output only includes files with issues."
+    }
   },
   {
     id: "pylint",
@@ -133,7 +173,15 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "issues",
     description: "Python static code analyzer",
-    command: "pylint"
+    command: "pylint",
+    fileMetricsRequirements: {
+      completeCommand: "pylint --output-format=json .",
+      requiredFlags: ["--output-format=json"],
+      formatFlag: "--output-format=json",
+      withoutConfig: "Output cannot be parsed for file metrics",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: false
+    }
   },
   // Go linting
   {
@@ -172,7 +220,15 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "binary",
     description: "Opinionated code formatter",
-    command: "prettier --check"
+    command: "prettier --check",
+    fileMetricsRequirements: {
+      completeCommand: "npx prettier --check . --no-error-on-unmatched-pattern --log-level debug",
+      requiredFlags: ["--check", "--log-level debug"],
+      withoutConfig: "Without --log-level debug, file list is not available",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: true,
+      notes: "Prettier with --log-level debug lists all checked files. This is the reference implementation for complete file metrics."
+    }
   },
   {
     id: "biome-format",
@@ -184,7 +240,15 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "binary",
     description: "Fast code formatter for JavaScript and TypeScript",
-    command: "biome format"
+    command: "biome format",
+    fileMetricsRequirements: {
+      completeCommand: "npx @biomejs/biome format . --reporter=json",
+      requiredFlags: ["--reporter=json"],
+      formatFlag: "--reporter=json",
+      withoutConfig: "Output cannot be parsed for file metrics",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: true
+    }
   },
   // Python formatting
   {
@@ -247,7 +311,15 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "issues",
     description: "TypeScript type checker",
-    command: "tsc --noEmit"
+    command: "tsc --noEmit",
+    fileMetricsRequirements: {
+      completeCommand: "npx tsc --noEmit --listFiles",
+      requiredFlags: ["--listFiles"],
+      withoutConfig: "Only files with type errors are reported. Cannot determine total files analyzed.",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: false,
+      notes: "The --listFiles flag is REQUIRED to get the complete list of files TypeScript analyzed. Without it, only files with errors appear in output."
+    }
   },
   // Python type checking
   {
@@ -298,7 +370,16 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "coverage",
     description: "JavaScript testing framework",
-    command: "jest --coverage"
+    command: "jest --coverage",
+    fileMetricsRequirements: {
+      completeCommand: "npx jest --coverage --json --outputFile=jest-results.json",
+      requiredFlags: ["--coverage", "--json"],
+      formatFlag: "--json",
+      withoutConfig: "Without --coverage, no per-file coverage data is available. Without --json, output cannot be parsed.",
+      fallbackStrategy: "coverage-only",
+      nativelyComplete: false,
+      notes: "Jest coverage data provides per-file metrics for source files. Test file results are separate from source coverage."
+    }
   },
   {
     id: "vitest",
@@ -310,7 +391,16 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "coverage",
     description: "Vite-native testing framework",
-    command: "vitest run --coverage"
+    command: "vitest run --coverage",
+    fileMetricsRequirements: {
+      completeCommand: "npx vitest run --coverage --reporter=json",
+      requiredFlags: ["--coverage", "--reporter=json"],
+      formatFlag: "--reporter=json",
+      withoutConfig: "Without --coverage, no per-file coverage data is available",
+      fallbackStrategy: "coverage-only",
+      nativelyComplete: false,
+      notes: "Vitest coverage provides per-file metrics. Requires @vitest/coverage-v8 or @vitest/coverage-istanbul."
+    }
   },
   {
     id: "bun-test",
@@ -322,7 +412,15 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "coverage",
     description: "Bun native test runner",
-    command: "bun test"
+    command: "bun test",
+    fileMetricsRequirements: {
+      completeCommand: "bun test --coverage",
+      requiredFlags: ["--coverage"],
+      withoutConfig: "Without --coverage, no per-file coverage data is available",
+      fallbackStrategy: "coverage-only",
+      nativelyComplete: false,
+      notes: "Bun test coverage is built-in but requires --coverage flag."
+    }
   },
   // Python testing
   {
@@ -373,7 +471,16 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "issues",
     description: "Find unused files, dependencies and exports",
-    command: "knip"
+    command: "knip",
+    fileMetricsRequirements: {
+      completeCommand: "npx knip --reporter json",
+      requiredFlags: ["--reporter json"],
+      formatFlag: "--reporter json",
+      withoutConfig: "Output cannot be parsed for file metrics",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: false,
+      notes: "Knip reports unused files and exports. It does not list all analyzed files, only those with issues."
+    }
   },
   // Python
   {
@@ -399,7 +506,16 @@ var LENS_REGISTRY = [
     outputsAggregate: true,
     colorScheme: "binary",
     description: "Documentation coverage checker",
-    command: "alexandria lint"
+    command: "alexandria lint",
+    fileMetricsRequirements: {
+      completeCommand: "npx @principal-ai/alexandria-cli coverage --json",
+      requiredFlags: ["--json"],
+      formatFlag: "--json",
+      withoutConfig: "Output cannot be parsed for file metrics",
+      fallbackStrategy: "source-file-count",
+      nativelyComplete: true,
+      notes: "Alexandria reports documentation coverage for all analyzed files."
+    }
   },
   {
     id: "typedoc",
@@ -1034,6 +1150,77 @@ function getAllDefaultLensIds() {
   }
   return Array.from(ids);
 }
+
+// src/extraction.ts
+function normalizeLensId(lensId) {
+  const id = lensId.toLowerCase();
+  if (id === "lint") return "eslint";
+  if (id === "typecheck" || id === "tsc") return "typescript";
+  if (id === "format") return "prettier";
+  if (id === "test") return "jest";
+  return id;
+}
+function getFileMetricsKey(lensId) {
+  return normalizeLensId(lensId);
+}
+function lensProducesCoverage(lensId) {
+  return getCategoryForLens(lensId) === "tests";
+}
+function extractQualityDataFromResults(results) {
+  const fileCoverage = {};
+  const fileMetrics = {};
+  for (const result of results) {
+    const lensId = result.lens?.id?.toLowerCase() || "unknown";
+    if (result.coverage?.files) {
+      for (const file of result.coverage.files) {
+        fileCoverage[file.file] = file.lines;
+      }
+    }
+    if (result.fileMetrics && result.fileMetrics.length > 0) {
+      const key = getFileMetricsKey(lensId);
+      fileMetrics[key] = [...fileMetrics[key] || [], ...result.fileMetrics];
+    }
+  }
+  return {
+    fileCoverage: Object.keys(fileCoverage).length > 0 ? fileCoverage : void 0,
+    fileMetrics: Object.keys(fileMetrics).length > 0 ? fileMetrics : void 0
+  };
+}
+function extractQualityDataWithPaths(results, prefixPaths = false) {
+  if (!prefixPaths) {
+    return extractQualityDataFromResults(results);
+  }
+  const fileCoverage = {};
+  const fileMetrics = {};
+  for (const result of results) {
+    const lensId = result.lens?.id?.toLowerCase() || "unknown";
+    const packagePath = result.package?.path || "";
+    const toFullPath = (filePath) => {
+      if (!packagePath || filePath.startsWith(packagePath)) {
+        return filePath;
+      }
+      return `${packagePath}/${filePath}`;
+    };
+    if (result.coverage?.files) {
+      for (const file of result.coverage.files) {
+        const fullPath = toFullPath(file.file);
+        fileCoverage[fullPath] = file.lines;
+      }
+    }
+    if (result.fileMetrics && result.fileMetrics.length > 0) {
+      const key = getFileMetricsKey(lensId);
+      const prefixedMetrics = result.fileMetrics.map((fm) => ({
+        ...fm,
+        file: toFullPath(fm.file)
+      }));
+      fileMetrics[key] = [...fileMetrics[key] || [], ...prefixedMetrics];
+    }
+  }
+  return {
+    fileCoverage: Object.keys(fileCoverage).length > 0 ? fileCoverage : void 0,
+    fileMetrics: Object.keys(fileMetrics).length > 0 ? fileMetrics : void 0
+  };
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CATEGORY_CONFIGS,
@@ -1046,6 +1233,8 @@ function getAllDefaultLensIds() {
   RUST_DEFAULTS,
   areLensesAlternatives,
   detectLanguageFromExtension,
+  extractQualityDataFromResults,
+  extractQualityDataWithPaths,
   findCategoryConflicts,
   getAllColorModeConfigs,
   getAllDefaultLensIds,
@@ -1062,6 +1251,7 @@ function getAllDefaultLensIds() {
   getColorModesForLanguage,
   getDefaultCommand,
   getDefaultCommands,
+  getFileMetricsKey,
   getHexagonMetricForCategory,
   getHexagonMetricKeys,
   getLanguageConfig,
@@ -1082,6 +1272,8 @@ function getAllDefaultLensIds() {
   isLensInHexagonMetric,
   isValidColorMode,
   isValidLensId,
+  lensProducesCoverage,
+  normalizeLensId,
   validateLensOutputs
 });
 //# sourceMappingURL=index.cjs.map

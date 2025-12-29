@@ -35,6 +35,56 @@ export type ColorScheme =
   | 'binary';   // Has issues or not (green/red)
 
 /**
+ * Requirements for a lens to produce complete file metrics
+ * Used by the CLI diagnose command to help users configure lenses correctly
+ */
+export interface FileMetricsRequirements {
+  /**
+   * The complete command that produces full file metrics
+   * This is the "known good" configuration for quality-lens.yaml
+   */
+  completeCommand: string;
+
+  /**
+   * Required flags that must be present for complete file metrics
+   * e.g., ['--listFiles'] for TypeScript, ['--coverage'] for Jest
+   */
+  requiredFlags?: string[];
+
+  /**
+   * Output format flag required for parsing (if any)
+   * e.g., '--format json' for ESLint, '--reporter=json' for Biome
+   */
+  formatFlag?: string;
+
+  /**
+   * What happens without the required configuration
+   * Shown to users to explain why their setup is incomplete
+   */
+  withoutConfig: string;
+
+  /**
+   * Strategy used when complete file metrics are unavailable
+   * - 'source-file-count': Count source files as fallback
+   * - 'issues-only': Only files with issues are reported
+   * - 'coverage-only': Only coverage data, no source metrics
+   * - 'none': No fallback available
+   */
+  fallbackStrategy: 'source-file-count' | 'issues-only' | 'coverage-only' | 'none';
+
+  /**
+   * Whether this lens natively produces complete file metrics
+   * (i.e., reports ALL analyzed files, not just those with issues)
+   */
+  nativelyComplete: boolean;
+
+  /**
+   * Additional notes about file metrics for this lens
+   */
+  notes?: string;
+}
+
+/**
  * Metadata for a quality lens
  */
 export interface LensMetadata {
@@ -74,6 +124,12 @@ export interface LensMetadata {
    * Useful for documentation and debugging
    */
   command?: string;
+
+  /**
+   * Requirements for producing complete file metrics
+   * Used by CLI diagnose command to help users configure correctly
+   */
+  fileMetricsRequirements?: FileMetricsRequirements;
 }
 
 /**

@@ -24,6 +24,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'Pluggable linting utility for JavaScript and TypeScript',
     command: 'eslint',
+    fileMetricsRequirements: {
+      completeCommand: 'npx eslint . --format json',
+      requiredFlags: ['--format json'],
+      formatFlag: '--format json',
+      withoutConfig: 'Only files with issues are reported in the output',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+      notes: 'ESLint JSON output only includes files that have issues. Clean files are not listed.',
+    },
   },
   {
     id: 'biome-lint',
@@ -36,6 +45,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'Fast linter for JavaScript and TypeScript',
     command: 'biome lint',
+    fileMetricsRequirements: {
+      completeCommand: 'npx @biomejs/biome lint . --reporter=json',
+      requiredFlags: ['--reporter=json'],
+      formatFlag: '--reporter=json',
+      withoutConfig: 'Output cannot be parsed for file metrics',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: true,
+      notes: 'Biome JSON output includes all analyzed files.',
+    },
   },
   {
     id: 'oxlint',
@@ -48,6 +66,14 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'Blazing fast JavaScript/TypeScript linter',
     command: 'oxlint',
+    fileMetricsRequirements: {
+      completeCommand: 'npx oxlint --format json',
+      requiredFlags: ['--format json'],
+      formatFlag: '--format json',
+      withoutConfig: 'Output cannot be parsed for file metrics',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+    },
   },
 
   // Python linting
@@ -62,6 +88,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'Extremely fast Python linter',
     command: 'ruff check',
+    fileMetricsRequirements: {
+      completeCommand: 'ruff check . --output-format=json',
+      requiredFlags: ['--output-format=json'],
+      formatFlag: '--output-format=json',
+      withoutConfig: 'Output cannot be parsed for file metrics',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+      notes: 'Ruff JSON output only includes files with issues.',
+    },
   },
   {
     id: 'pylint',
@@ -73,6 +108,14 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'Python static code analyzer',
     command: 'pylint',
+    fileMetricsRequirements: {
+      completeCommand: 'pylint --output-format=json .',
+      requiredFlags: ['--output-format=json'],
+      formatFlag: '--output-format=json',
+      withoutConfig: 'Output cannot be parsed for file metrics',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+    },
   },
 
   // Go linting
@@ -116,6 +159,14 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'binary',
     description: 'Opinionated code formatter',
     command: 'prettier --check',
+    fileMetricsRequirements: {
+      completeCommand: 'npx prettier --check . --no-error-on-unmatched-pattern --log-level debug',
+      requiredFlags: ['--check', '--log-level debug'],
+      withoutConfig: 'Without --log-level debug, file list is not available',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: true,
+      notes: 'Prettier with --log-level debug lists all checked files. This is the reference implementation for complete file metrics.',
+    },
   },
   {
     id: 'biome-format',
@@ -128,6 +179,14 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'binary',
     description: 'Fast code formatter for JavaScript and TypeScript',
     command: 'biome format',
+    fileMetricsRequirements: {
+      completeCommand: 'npx @biomejs/biome format . --reporter=json',
+      requiredFlags: ['--reporter=json'],
+      formatFlag: '--reporter=json',
+      withoutConfig: 'Output cannot be parsed for file metrics',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: true,
+    },
   },
 
   // Python formatting
@@ -196,6 +255,14 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'TypeScript type checker',
     command: 'tsc --noEmit',
+    fileMetricsRequirements: {
+      completeCommand: 'npx tsc --noEmit --listFiles',
+      requiredFlags: ['--listFiles'],
+      withoutConfig: 'Only files with type errors are reported. Cannot determine total files analyzed.',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+      notes: 'The --listFiles flag is REQUIRED to get the complete list of files TypeScript analyzed. Without it, only files with errors appear in output.',
+    },
   },
 
   // Python type checking
@@ -251,6 +318,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'coverage',
     description: 'JavaScript testing framework',
     command: 'jest --coverage',
+    fileMetricsRequirements: {
+      completeCommand: 'npx jest --coverage --json --outputFile=jest-results.json',
+      requiredFlags: ['--coverage', '--json'],
+      formatFlag: '--json',
+      withoutConfig: 'Without --coverage, no per-file coverage data is available. Without --json, output cannot be parsed.',
+      fallbackStrategy: 'coverage-only',
+      nativelyComplete: false,
+      notes: 'Jest coverage data provides per-file metrics for source files. Test file results are separate from source coverage.',
+    },
   },
   {
     id: 'vitest',
@@ -263,6 +339,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'coverage',
     description: 'Vite-native testing framework',
     command: 'vitest run --coverage',
+    fileMetricsRequirements: {
+      completeCommand: 'npx vitest run --coverage --reporter=json',
+      requiredFlags: ['--coverage', '--reporter=json'],
+      formatFlag: '--reporter=json',
+      withoutConfig: 'Without --coverage, no per-file coverage data is available',
+      fallbackStrategy: 'coverage-only',
+      nativelyComplete: false,
+      notes: 'Vitest coverage provides per-file metrics. Requires @vitest/coverage-v8 or @vitest/coverage-istanbul.',
+    },
   },
   {
     id: 'bun-test',
@@ -275,6 +360,14 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'coverage',
     description: 'Bun native test runner',
     command: 'bun test',
+    fileMetricsRequirements: {
+      completeCommand: 'bun test --coverage',
+      requiredFlags: ['--coverage'],
+      withoutConfig: 'Without --coverage, no per-file coverage data is available',
+      fallbackStrategy: 'coverage-only',
+      nativelyComplete: false,
+      notes: 'Bun test coverage is built-in but requires --coverage flag.',
+    },
   },
 
   // Python testing
@@ -331,6 +424,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'Find unused files, dependencies and exports',
     command: 'knip',
+    fileMetricsRequirements: {
+      completeCommand: 'npx knip --reporter json',
+      requiredFlags: ['--reporter json'],
+      formatFlag: '--reporter json',
+      withoutConfig: 'Output cannot be parsed for file metrics',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+      notes: 'Knip reports unused files and exports. It does not list all analyzed files, only those with issues.',
+    },
   },
 
   // Python
@@ -360,6 +462,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'binary',
     description: 'Documentation coverage checker',
     command: 'alexandria lint',
+    fileMetricsRequirements: {
+      completeCommand: 'npx @principal-ai/alexandria-cli coverage --json',
+      requiredFlags: ['--json'],
+      formatFlag: '--json',
+      withoutConfig: 'Output cannot be parsed for file metrics',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: true,
+      notes: 'Alexandria reports documentation coverage for all analyzed files.',
+    },
   },
   {
     id: 'typedoc',
