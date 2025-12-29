@@ -1,0 +1,278 @@
+{
+  "pv": {
+    "name": "Quality Lens Registry Architecture",
+    "version": "1.0.0"
+  },
+  "nodes": [
+    {
+      "id": "index",
+      "type": "file",
+      "file": "src/index.ts",
+      "x": 495,
+      "y": 19,
+      "width": 200,
+      "height": 80,
+      "color": "#10b981",
+      "pv": {
+        "nodeType": "entry-point",
+        "name": "index.ts",
+        "description": "Package entry point - exports all public APIs (37+ functions, 17 types, 3 data structures)",
+        "shape": "rectangle"
+      }
+    },
+    {
+      "id": "types",
+      "type": "file",
+      "file": "src/types.ts",
+      "x": 502,
+      "y": 566,
+      "width": 200,
+      "height": 80,
+      "color": "#8b5cf6",
+      "pv": {
+        "nodeType": "type-definitions",
+        "name": "types.ts",
+        "description": "Core type definitions: Language, LensCategory, ColorScheme, LensMetadata, CategoryConfig, LanguageConfig",
+        "shape": "rectangle"
+      }
+    },
+    {
+      "id": "registry",
+      "type": "file",
+      "file": "src/registry.ts",
+      "x": 743,
+      "y": 407,
+      "width": 200,
+      "height": 80,
+      "color": "#f59e0b",
+      "pv": {
+        "nodeType": "data-store",
+        "name": "registry.ts",
+        "description": "Central data store: LENS_REGISTRY (36+ lenses), CATEGORY_CONFIGS (8 categories), LANGUAGE_CONFIGS (9 languages)",
+        "shape": "cylinder"
+      }
+    },
+    {
+      "id": "helpers",
+      "type": "file",
+      "file": "src/helpers.ts",
+      "x": 737,
+      "y": 146,
+      "width": 200,
+      "height": 80,
+      "color": "#3b82f6",
+      "pv": {
+        "nodeType": "module",
+        "name": "helpers.ts",
+        "description": "25+ utility functions for lens lookups, color mode management, hexagon metrics, and validation",
+        "shape": "rectangle"
+      }
+    },
+    {
+      "id": "defaults",
+      "type": "file",
+      "file": "src/defaults.ts",
+      "x": 271,
+      "y": 145,
+      "width": 200,
+      "height": 80,
+      "color": "#3b82f6",
+      "pv": {
+        "nodeType": "module",
+        "name": "defaults.ts",
+        "description": "Default commands per language (JS/TS, Python, Go, Rust) when no config exists",
+        "shape": "rectangle"
+      }
+    },
+    {
+      "id": "cli",
+      "type": "text",
+      "text": "**@principal-ai/quality-lens-cli**\n\nCLI tool that validates lens outputs against registry metadata",
+      "x": 58,
+      "y": -285,
+      "width": 220,
+      "height": 195,
+      "color": "#6b7280",
+      "pv": {
+        "nodeType": "external-consumer",
+        "name": "@principal-ai/quality-lens-cli",
+        "description": "CLI tool that validates lens outputs against registry metadata",
+        "shape": "hexagon"
+      }
+    },
+    {
+      "id": "lenses",
+      "type": "text",
+      "text": "**@principal-ai/codebase-quality-lenses**\n\nLens implementations that reference registry for lens IDs",
+      "x": 325,
+      "y": -284,
+      "width": 250,
+      "height": 188,
+      "color": "#6b7280",
+      "pv": {
+        "nodeType": "external-consumer",
+        "name": "@principal-ai/codebase-quality-lenses",
+        "description": "Lens implementations that reference registry for lens IDs",
+        "shape": "hexagon"
+      }
+    },
+    {
+      "id": "hexagon-ui",
+      "type": "text",
+      "text": "**@principal-ade/code-quality-panels**\n\nQuality Hexagon UI - uses registry for category-to-lens mapping",
+      "x": 607,
+      "y": -283,
+      "width": 230,
+      "height": 190,
+      "color": "#6b7280",
+      "pv": {
+        "nodeType": "external-consumer",
+        "name": "@principal-ade/code-quality-panels",
+        "description": "Quality Hexagon UI - uses registry for category-to-lens mapping",
+        "shape": "hexagon"
+      }
+    },
+    {
+      "id": "file-city",
+      "type": "text",
+      "text": "**@industry-theme/file-city-panel**\n\nFile City visualization - uses registry for lens display names and color modes",
+      "x": 871,
+      "y": -284,
+      "width": 230,
+      "height": 192,
+      "color": "#6b7280",
+      "pv": {
+        "nodeType": "external-consumer",
+        "name": "@industry-theme/file-city-panel",
+        "description": "File City visualization - uses registry for lens display names and color modes",
+        "shape": "hexagon"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "index-exports-types",
+      "fromNode": "index",
+      "toNode": "types",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "re-exports types",
+      "pv": {
+        "edgeType": "exports"
+      }
+    },
+    {
+      "id": "index-exports-registry",
+      "fromNode": "index",
+      "toNode": "registry",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "re-exports data",
+      "pv": {
+        "edgeType": "exports"
+      }
+    },
+    {
+      "id": "index-exports-helpers",
+      "fromNode": "index",
+      "toNode": "helpers",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "re-exports functions",
+      "pv": {
+        "edgeType": "exports"
+      }
+    },
+    {
+      "id": "index-exports-defaults",
+      "fromNode": "index",
+      "toNode": "defaults",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "re-exports defaults",
+      "pv": {
+        "edgeType": "exports"
+      }
+    },
+    {
+      "id": "edge-cli-index-1767022419571",
+      "fromNode": "cli",
+      "toNode": "index",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "consumes"
+      }
+    },
+    {
+      "id": "edge-lenses-index-1767022419572",
+      "fromNode": "lenses",
+      "toNode": "index",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "consumes"
+      }
+    },
+    {
+      "id": "edge-hexagon-ui-index-1767022419572",
+      "fromNode": "hexagon-ui",
+      "toNode": "index",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "consumes"
+      }
+    },
+    {
+      "id": "edge-file-city-index-1767022419572",
+      "fromNode": "file-city",
+      "toNode": "index",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "consumes"
+      }
+    },
+    {
+      "id": "edge-defaults-types-1767022419572",
+      "fromNode": "defaults",
+      "toNode": "types",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "imports"
+      }
+    },
+    {
+      "id": "edge-helpers-types-1767022419572",
+      "fromNode": "helpers",
+      "toNode": "types",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "imports"
+      }
+    },
+    {
+      "id": "edge-registry-types-1767022419572",
+      "fromNode": "registry",
+      "toNode": "types",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "imports"
+      }
+    },
+    {
+      "id": "edge-helpers-registry-1767022419572",
+      "fromNode": "helpers",
+      "toNode": "registry",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": {
+        "edgeType": "imports"
+      }
+    }
+  ]
+}

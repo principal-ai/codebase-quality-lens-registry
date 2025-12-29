@@ -1,0 +1,76 @@
+version: "1.0.0"
+name: "Quality Lens Registry"
+
+nodeComponents:
+  module:
+    defaultLabel: "Module"
+    description: "TypeScript source module"
+    color: "#3b82f6"
+    shape: "rectangle"
+
+  entry-point:
+    defaultLabel: "Entry Point"
+    description: "Package entry point that exports public APIs"
+    color: "#10b981"
+    shape: "rectangle"
+
+  data-store:
+    defaultLabel: "Data Store"
+    description: "Registry data structure containing lens/category/language metadata"
+    color: "#f59e0b"
+    shape: "cylinder"
+
+  type-definitions:
+    defaultLabel: "Type Definitions"
+    description: "TypeScript interfaces and type aliases"
+    color: "#8b5cf6"
+    shape: "rectangle"
+
+  external-consumer:
+    defaultLabel: "External Consumer"
+    description: "External package that consumes this registry"
+    color: "#6b7280"
+    shape: "hexagon"
+
+  category:
+    defaultLabel: "Category"
+    description: "Quality lens category (linting, formatting, types, tests, etc.)"
+    color: "#8b5cf6"
+    shape: "rectangle"
+
+  lens:
+    defaultLabel: "Lens"
+    description: "Individual quality lens tool"
+    color: "#3b82f6"
+    shape: "rectangle"
+
+  language:
+    defaultLabel: "Language"
+    description: "Supported programming language"
+    color: "#10b981"
+    shape: "rectangle"
+
+edgeComponents:
+  exports:
+    label: "Exports"
+    description: "Module exports symbols for external use"
+    color: "#10b981"
+    style: "solid"
+
+  imports:
+    label: "Imports"
+    description: "Module imports from another module"
+    color: "#3b82f6"
+    style: "solid"
+
+  consumes:
+    label: "Consumes"
+    description: "External package consumes registry data"
+    color: "#6b7280"
+    style: "dashed"
+
+  contains:
+    label: "Contains"
+    description: "Category contains lenses"
+    color: "#8b5cf6"
+    style: "solid"

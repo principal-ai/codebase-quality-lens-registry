@@ -1,0 +1,611 @@
+{
+  "pv": {
+    "name": "Lens Registry Detail",
+    "version": "1.0.0"
+  },
+  "nodes": [
+    {
+      "id": "registry-header",
+      "type": "text",
+      "text": "# LENS_REGISTRY\n\n24 quality lenses across 8 categories supporting 9 languages",
+      "x": 400,
+      "y": -100,
+      "width": 400,
+      "height": 80,
+      "color": "#f59e0b"
+    },
+
+    {
+      "id": "cat-linting",
+      "type": "text",
+      "text": "## Linting\n\nCode style & bug detection\n\n**7 lenses**",
+      "x": 0,
+      "y": 50,
+      "width": 180,
+      "height": 120,
+      "color": "#ef4444",
+      "pv": { "nodeType": "category", "name": "Linting" }
+    },
+    {
+      "id": "cat-formatting",
+      "type": "text",
+      "text": "## Formatting\n\nCode formatting consistency\n\n**6 lenses**",
+      "x": 200,
+      "y": 50,
+      "width": 180,
+      "height": 120,
+      "color": "#f97316",
+      "pv": { "nodeType": "category", "name": "Formatting" }
+    },
+    {
+      "id": "cat-types",
+      "type": "text",
+      "text": "## Types\n\nType safety & checking\n\n**4 lenses**",
+      "x": 400,
+      "y": 50,
+      "width": 180,
+      "height": 120,
+      "color": "#eab308",
+      "pv": { "nodeType": "category", "name": "Types" }
+    },
+    {
+      "id": "cat-tests",
+      "type": "text",
+      "text": "## Tests\n\nTest coverage & results\n\n**6 lenses**",
+      "x": 600,
+      "y": 50,
+      "width": 180,
+      "height": 120,
+      "color": "#22c55e",
+      "pv": { "nodeType": "category", "name": "Tests" }
+    },
+    {
+      "id": "cat-dead-code",
+      "type": "text",
+      "text": "## Dead Code\n\nUnused code detection\n\n**2 lenses**",
+      "x": 800,
+      "y": 50,
+      "width": 180,
+      "height": 120,
+      "color": "#14b8a6",
+      "pv": { "nodeType": "category", "name": "Dead Code" }
+    },
+    {
+      "id": "cat-docs",
+      "type": "text",
+      "text": "## Documentation\n\nDocumentation coverage\n\n**2 lenses**",
+      "x": 1000,
+      "y": 50,
+      "width": 180,
+      "height": 120,
+      "color": "#3b82f6",
+      "pv": { "nodeType": "category", "name": "Documentation" }
+    },
+    {
+      "id": "cat-security",
+      "type": "text",
+      "text": "## Security\n\nVulnerability scanning\n\n**2 lenses**",
+      "x": 1200,
+      "y": 50,
+      "width": 180,
+      "height": 120,
+      "color": "#8b5cf6",
+      "pv": { "nodeType": "category", "name": "Security" }
+    },
+
+    {
+      "id": "lens-eslint",
+      "type": "text",
+      "text": "**ESLint**\n\nTS/JS",
+      "x": 0,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#fecaca",
+      "pv": { "nodeType": "lens", "name": "ESLint", "description": "Pluggable linting utility for JavaScript and TypeScript" }
+    },
+    {
+      "id": "lens-biome-lint",
+      "type": "text",
+      "text": "**Biome Lint**\n\nTS/JS",
+      "x": 95,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#fecaca",
+      "pv": { "nodeType": "lens", "name": "Biome Lint", "description": "Fast linter for JavaScript and TypeScript" }
+    },
+    {
+      "id": "lens-oxlint",
+      "type": "text",
+      "text": "**OxLint**\n\nTS/JS",
+      "x": 0,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#fecaca",
+      "pv": { "nodeType": "lens", "name": "OxLint", "description": "Blazing fast JavaScript/TypeScript linter" }
+    },
+    {
+      "id": "lens-ruff",
+      "type": "text",
+      "text": "**Ruff**\n\nPython",
+      "x": 95,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#fecaca",
+      "pv": { "nodeType": "lens", "name": "Ruff", "description": "Extremely fast Python linter" }
+    },
+    {
+      "id": "lens-pylint",
+      "type": "text",
+      "text": "**Pylint**\n\nPython",
+      "x": 0,
+      "y": 340,
+      "width": 85,
+      "height": 60,
+      "color": "#fecaca",
+      "pv": { "nodeType": "lens", "name": "Pylint", "description": "Python static code analyzer" }
+    },
+    {
+      "id": "lens-golangci",
+      "type": "text",
+      "text": "**golangci**\n\nGo",
+      "x": 95,
+      "y": 340,
+      "width": 85,
+      "height": 60,
+      "color": "#fecaca",
+      "pv": { "nodeType": "lens", "name": "golangci-lint", "description": "Fast linters runner for Go" }
+    },
+    {
+      "id": "lens-clippy",
+      "type": "text",
+      "text": "**Clippy**\n\nRust",
+      "x": 47,
+      "y": 410,
+      "width": 85,
+      "height": 60,
+      "color": "#fecaca",
+      "pv": { "nodeType": "lens", "name": "Clippy", "description": "Rust linter" }
+    },
+
+    {
+      "id": "lens-prettier",
+      "type": "text",
+      "text": "**Prettier**\n\nTS/JS",
+      "x": 200,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#fed7aa",
+      "pv": { "nodeType": "lens", "name": "Prettier", "description": "Opinionated code formatter" }
+    },
+    {
+      "id": "lens-biome-fmt",
+      "type": "text",
+      "text": "**Biome Fmt**\n\nTS/JS",
+      "x": 295,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#fed7aa",
+      "pv": { "nodeType": "lens", "name": "Biome Format", "description": "Fast code formatter for JavaScript and TypeScript" }
+    },
+    {
+      "id": "lens-black",
+      "type": "text",
+      "text": "**Black**\n\nPython",
+      "x": 200,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#fed7aa",
+      "pv": { "nodeType": "lens", "name": "Black", "description": "The uncompromising Python code formatter" }
+    },
+    {
+      "id": "lens-ruff-fmt",
+      "type": "text",
+      "text": "**Ruff Fmt**\n\nPython",
+      "x": 295,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#fed7aa",
+      "pv": { "nodeType": "lens", "name": "Ruff Format", "description": "Fast Python formatter (Ruff)" }
+    },
+    {
+      "id": "lens-gofmt",
+      "type": "text",
+      "text": "**gofmt**\n\nGo",
+      "x": 200,
+      "y": 340,
+      "width": 85,
+      "height": 60,
+      "color": "#fed7aa",
+      "pv": { "nodeType": "lens", "name": "gofmt", "description": "Go code formatter" }
+    },
+    {
+      "id": "lens-rustfmt",
+      "type": "text",
+      "text": "**rustfmt**\n\nRust",
+      "x": 295,
+      "y": 340,
+      "width": 85,
+      "height": 60,
+      "color": "#fed7aa",
+      "pv": { "nodeType": "lens", "name": "rustfmt", "description": "Rust code formatter" }
+    },
+
+    {
+      "id": "lens-typescript",
+      "type": "text",
+      "text": "**TypeScript**\n\nTS",
+      "x": 400,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#fef08a",
+      "pv": { "nodeType": "lens", "name": "TypeScript", "description": "TypeScript type checker" }
+    },
+    {
+      "id": "lens-mypy",
+      "type": "text",
+      "text": "**MyPy**\n\nPython",
+      "x": 495,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#fef08a",
+      "pv": { "nodeType": "lens", "name": "MyPy", "description": "Static type checker for Python" }
+    },
+    {
+      "id": "lens-pyright",
+      "type": "text",
+      "text": "**Pyright**\n\nPython",
+      "x": 400,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#fef08a",
+      "pv": { "nodeType": "lens", "name": "Pyright", "description": "Static type checker for Python" }
+    },
+    {
+      "id": "lens-govet",
+      "type": "text",
+      "text": "**Go Vet**\n\nGo",
+      "x": 495,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#fef08a",
+      "pv": { "nodeType": "lens", "name": "Go Vet", "description": "Go static analyzer" }
+    },
+
+    {
+      "id": "lens-jest",
+      "type": "text",
+      "text": "**Jest**\n\nTS/JS",
+      "x": 600,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#bbf7d0",
+      "pv": { "nodeType": "lens", "name": "Jest", "description": "JavaScript testing framework" }
+    },
+    {
+      "id": "lens-vitest",
+      "type": "text",
+      "text": "**Vitest**\n\nTS/JS",
+      "x": 695,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#bbf7d0",
+      "pv": { "nodeType": "lens", "name": "Vitest", "description": "Vite-native testing framework" }
+    },
+    {
+      "id": "lens-bun-test",
+      "type": "text",
+      "text": "**Bun Test**\n\nTS/JS",
+      "x": 600,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#bbf7d0",
+      "pv": { "nodeType": "lens", "name": "Bun Test", "description": "Bun native test runner" }
+    },
+    {
+      "id": "lens-pytest",
+      "type": "text",
+      "text": "**Pytest**\n\nPython",
+      "x": 695,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#bbf7d0",
+      "pv": { "nodeType": "lens", "name": "Pytest", "description": "Python testing framework" }
+    },
+    {
+      "id": "lens-go-test",
+      "type": "text",
+      "text": "**Go Test**\n\nGo",
+      "x": 600,
+      "y": 340,
+      "width": 85,
+      "height": 60,
+      "color": "#bbf7d0",
+      "pv": { "nodeType": "lens", "name": "Go Test", "description": "Go test runner" }
+    },
+    {
+      "id": "lens-cargo-test",
+      "type": "text",
+      "text": "**Cargo Test**\n\nRust",
+      "x": 695,
+      "y": 340,
+      "width": 85,
+      "height": 60,
+      "color": "#bbf7d0",
+      "pv": { "nodeType": "lens", "name": "Cargo Test", "description": "Rust test runner" }
+    },
+
+    {
+      "id": "lens-knip",
+      "type": "text",
+      "text": "**Knip**\n\nTS/JS",
+      "x": 847,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#99f6e4",
+      "pv": { "nodeType": "lens", "name": "Knip", "description": "Find unused files, dependencies and exports" }
+    },
+    {
+      "id": "lens-vulture",
+      "type": "text",
+      "text": "**Vulture**\n\nPython",
+      "x": 847,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#99f6e4",
+      "pv": { "nodeType": "lens", "name": "Vulture", "description": "Find dead Python code" }
+    },
+
+    {
+      "id": "lens-alexandria",
+      "type": "text",
+      "text": "**Alexandria**\n\nTS/JS",
+      "x": 1047,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#bfdbfe",
+      "pv": { "nodeType": "lens", "name": "Alexandria", "description": "Documentation coverage checker" }
+    },
+    {
+      "id": "lens-typedoc",
+      "type": "text",
+      "text": "**TypeDoc**\n\nTS",
+      "x": 1047,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#bfdbfe",
+      "pv": { "nodeType": "lens", "name": "TypeDoc", "description": "TypeScript documentation generator" }
+    },
+
+    {
+      "id": "lens-npm-audit",
+      "type": "text",
+      "text": "**npm audit**\n\nTS/JS",
+      "x": 1247,
+      "y": 200,
+      "width": 85,
+      "height": 60,
+      "color": "#ddd6fe",
+      "pv": { "nodeType": "lens", "name": "npm audit", "description": "Check for known vulnerabilities in dependencies" }
+    },
+    {
+      "id": "lens-bandit",
+      "type": "text",
+      "text": "**Bandit**\n\nPython",
+      "x": 1247,
+      "y": 270,
+      "width": 85,
+      "height": 60,
+      "color": "#ddd6fe",
+      "pv": { "nodeType": "lens", "name": "Bandit", "description": "Python security linter" }
+    },
+
+    {
+      "id": "lang-header",
+      "type": "text",
+      "text": "# LANGUAGE_CONFIGS\n\n9 supported languages",
+      "x": 400,
+      "y": 520,
+      "width": 300,
+      "height": 60,
+      "color": "#10b981"
+    },
+    {
+      "id": "lang-ts",
+      "type": "text",
+      "text": "**TypeScript**\n\n.ts .tsx .mts .cts",
+      "x": 0,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#3178c6",
+      "pv": { "nodeType": "language", "name": "TypeScript" }
+    },
+    {
+      "id": "lang-js",
+      "type": "text",
+      "text": "**JavaScript**\n\n.js .jsx .mjs .cjs",
+      "x": 150,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#f7df1e",
+      "pv": { "nodeType": "language", "name": "JavaScript" }
+    },
+    {
+      "id": "lang-py",
+      "type": "text",
+      "text": "**Python**\n\n.py .pyi",
+      "x": 300,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#3776ab",
+      "pv": { "nodeType": "language", "name": "Python" }
+    },
+    {
+      "id": "lang-go",
+      "type": "text",
+      "text": "**Go**\n\n.go",
+      "x": 450,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#00add8",
+      "pv": { "nodeType": "language", "name": "Go" }
+    },
+    {
+      "id": "lang-rust",
+      "type": "text",
+      "text": "**Rust**\n\n.rs",
+      "x": 600,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#dea584",
+      "pv": { "nodeType": "language", "name": "Rust" }
+    },
+    {
+      "id": "lang-java",
+      "type": "text",
+      "text": "**Java**\n\n.java",
+      "x": 750,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#b07219",
+      "pv": { "nodeType": "language", "name": "Java" }
+    },
+    {
+      "id": "lang-csharp",
+      "type": "text",
+      "text": "**C#**\n\n.cs",
+      "x": 900,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#178600",
+      "pv": { "nodeType": "language", "name": "C#" }
+    },
+    {
+      "id": "lang-ruby",
+      "type": "text",
+      "text": "**Ruby**\n\n.rb",
+      "x": 1050,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#701516",
+      "pv": { "nodeType": "language", "name": "Ruby" }
+    },
+    {
+      "id": "lang-php",
+      "type": "text",
+      "text": "**PHP**\n\n.php",
+      "x": 1200,
+      "y": 620,
+      "width": 130,
+      "height": 70,
+      "color": "#4f5d95",
+      "pv": { "nodeType": "language", "name": "PHP" }
+    },
+
+    {
+      "id": "color-schemes",
+      "type": "text",
+      "text": "# Color Schemes\n\n**issues** - Issue count gradient (0=green, many=red)\n**coverage** - Percentage gradient (100%=green, 0%=red)\n**binary** - Has issues or not (green/red)",
+      "x": 0,
+      "y": 750,
+      "width": 450,
+      "height": 120,
+      "color": "#f3f4f6"
+    },
+    {
+      "id": "output-types",
+      "type": "text",
+      "text": "# Output Types\n\n**outputsFileMetrics** - Per-file data for File City visualization\n**outputsAggregate** - Aggregate scores for Quality Hexagon UI",
+      "x": 480,
+      "y": 750,
+      "width": 450,
+      "height": 120,
+      "color": "#f3f4f6"
+    }
+  ],
+  "edges": [
+    {
+      "id": "cat-lint-eslint",
+      "fromNode": "cat-linting",
+      "toNode": "lens-eslint",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": { "edgeType": "contains" }
+    },
+    {
+      "id": "cat-fmt-prettier",
+      "fromNode": "cat-formatting",
+      "toNode": "lens-prettier",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": { "edgeType": "contains" }
+    },
+    {
+      "id": "cat-types-ts",
+      "fromNode": "cat-types",
+      "toNode": "lens-typescript",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": { "edgeType": "contains" }
+    },
+    {
+      "id": "cat-tests-jest",
+      "fromNode": "cat-tests",
+      "toNode": "lens-jest",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": { "edgeType": "contains" }
+    },
+    {
+      "id": "cat-dead-knip",
+      "fromNode": "cat-dead-code",
+      "toNode": "lens-knip",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": { "edgeType": "contains" }
+    },
+    {
+      "id": "cat-docs-alexandria",
+      "fromNode": "cat-docs",
+      "toNode": "lens-alexandria",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": { "edgeType": "contains" }
+    },
+    {
+      "id": "cat-sec-npm",
+      "fromNode": "cat-security",
+      "toNode": "lens-npm-audit",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "pv": { "edgeType": "contains" }
+    }
+  ]
+}
