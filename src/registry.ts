@@ -142,6 +142,15 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'issues',
     description: 'Rust linter',
     command: 'cargo clippy',
+    fileMetricsRequirements: {
+      completeCommand: 'cargo clippy --workspace --all-features --message-format json -- -D warnings',
+      requiredFlags: ['--message-format json'],
+      formatFlag: '--message-format json',
+      withoutConfig: 'Only files with issues are reported in the output',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+      notes: 'Clippy JSON output only includes files with issues. Use cargo metadata to get complete file list.',
+    },
   },
 
   // ============================================================
@@ -238,6 +247,14 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'binary',
     description: 'Rust code formatter',
     command: 'cargo fmt --check',
+    fileMetricsRequirements: {
+      completeCommand: 'cargo fmt --all --check',
+      requiredFlags: ['--check'],
+      withoutConfig: 'Without --check, files are modified in place',
+      fallbackStrategy: 'source-file-count',
+      nativelyComplete: false,
+      notes: 'rustfmt only outputs files that need formatting. Use cargo metadata or glob for complete file list.',
+    },
   },
 
   // ============================================================
@@ -407,6 +424,36 @@ export const LENS_REGISTRY: LensMetadata[] = [
     colorScheme: 'coverage',
     description: 'Rust test runner',
     command: 'cargo test',
+    fileMetricsRequirements: {
+      completeCommand: 'cargo test --workspace --no-fail-fast -- -Z unstable-options --format json',
+      requiredFlags: ['--format json'],
+      formatFlag: '--format json',
+      withoutConfig: 'Without JSON format, output cannot be parsed for test results',
+      fallbackStrategy: 'coverage-only',
+      nativelyComplete: false,
+      notes: 'JSON format requires nightly or -Z unstable-options. Consider cargo-nextest for stable JSON output.',
+    },
+  },
+  {
+    id: 'cargo-nextest',
+    name: 'Cargo Nextest',
+    category: 'tests',
+    languages: ['rust'],
+    alternativeTo: ['cargo-test'],
+    outputsFileMetrics: true,
+    outputsAggregate: true,
+    colorScheme: 'coverage',
+    description: 'Next-generation Rust test runner',
+    command: 'cargo nextest run',
+    fileMetricsRequirements: {
+      completeCommand: 'cargo nextest run --workspace --message-format libtest-json',
+      requiredFlags: ['--message-format libtest-json'],
+      formatFlag: '--message-format libtest-json',
+      withoutConfig: 'Without JSON format, output cannot be parsed',
+      fallbackStrategy: 'coverage-only',
+      nativelyComplete: false,
+      notes: 'Nextest provides stable JSON output without nightly features.',
+    },
   },
 
   // ============================================================

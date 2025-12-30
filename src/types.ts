@@ -241,6 +241,7 @@ export type LensColorMode =
   | 'pytest'
   | 'go-test'
   | 'cargo-test'
+  | 'cargo-nextest'
   // Dead code
   | 'knip'
   | 'vulture'

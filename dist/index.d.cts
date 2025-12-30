@@ -159,7 +159,7 @@ type BuiltInColorMode = 'fileTypes' | 'git' | 'coverage';
  * Lens-based color modes derived from LENS_REGISTRY
  * These are lens IDs that output file metrics
  */
-type LensColorMode = 'eslint' | 'biome-lint' | 'oxlint' | 'ruff' | 'pylint' | 'golangci-lint' | 'clippy' | 'prettier' | 'biome-format' | 'black' | 'ruff-format' | 'gofmt' | 'rustfmt' | 'typescript' | 'mypy' | 'pyright' | 'go-vet' | 'jest' | 'vitest' | 'bun-test' | 'pytest' | 'go-test' | 'cargo-test' | 'knip' | 'vulture' | 'alexandria' | 'bandit';
+type LensColorMode = 'eslint' | 'biome-lint' | 'oxlint' | 'ruff' | 'pylint' | 'golangci-lint' | 'clippy' | 'prettier' | 'biome-format' | 'black' | 'ruff-format' | 'gofmt' | 'rustfmt' | 'typescript' | 'mypy' | 'pyright' | 'go-vet' | 'jest' | 'vitest' | 'bun-test' | 'pytest' | 'go-test' | 'cargo-test' | 'cargo-nextest' | 'knip' | 'vulture' | 'alexandria' | 'bandit';
 /**
  * All available color modes for File City visualization
  */
